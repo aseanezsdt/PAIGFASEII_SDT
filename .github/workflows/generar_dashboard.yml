@@ -1,0 +1,31 @@
+name: Generar Dashboard PAIG
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [actualizar-dashboard]
+
+jobs:
+  generar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependencias
+        run: pip install pandas openpyxl
+
+      - name: Generar dashboard HTML
+        run: python generar_dashboard_paig.py --excel datos.xlsx --output index.html
+
+      - name: Publicar en GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          include_files: index.html
